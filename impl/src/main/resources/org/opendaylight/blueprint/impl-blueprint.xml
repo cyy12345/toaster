@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<!--
+Copyright © 2017 cyy and others. All rights reserved.
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+  xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+           odl:restart-dependents-on-updates="true" odl:use-default-for-reference-types="true">
+
+
+  <odl:clustered-app-config id="toasterAppConfig"
+                            binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.controller.toaster.app.config.rev160503.ToasterAppConfig">
+    <odl:default-config><![CDATA[
+      <toaster-app-config xmlns="urn:opendaylight:params:xml:ns:yang:controller:toaster-app-config">
+      <manufacturer>"Opendaylight"</manufacturer>
+      <model-number>"Model 1 - Binding Aware"</model-number>
+        <max-make-toast-tries>2</max-make-toast-tries>
+      </toaster-app-config>
+    ]]></odl:default-config>
+  </odl:clustered-app-config>
+
+
+    <reference id="rpcProviderRegistry"
+               interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
+    <reference id="dataBroker" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker" odl:type="default" />
+    <reference id="notificationService" interface="org.opendaylight.controller.md.sal.binding.api.NotificationPublishService"/>
+
+
+
+    <bean id="provider"
+        class="org.opendaylight.toaster.impl.ToasterProvider"
+        init-method="init" destroy-method="close">
+        <argument ref="toasterAppConfig"/>
+        <argument ref="dataBroker" />
+        <argument ref="rpcProviderRegistry"/>
+        <argument ref="notificationService"/>
+    </bean>
+  <odl:rpc-implementation ref="provider"/>
+
+</blueprint>
